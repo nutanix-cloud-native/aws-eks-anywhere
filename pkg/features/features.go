@@ -56,6 +56,13 @@ func SnowProvider() Feature {
 	}
 }
 
+func NutanixProvider() Feature {
+	return Feature{
+		Name:     "Nutanix provider support",
+		IsActive: globalFeatures.isActiveForEnvVar(NutanixProviderEnvVar),
+	}
+}
+
 func CheckpointEnabled() Feature {
 	return Feature{
 		Name:     "Checkpoint to rerun commands enabled",
