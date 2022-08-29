@@ -7,6 +7,7 @@ const (
 	FullLifecycleAPIEnvVar          = "FULL_LIFECYCLE_API"
 	FullLifecycleGate               = "FullLifecycleAPI"
 	CheckpointEnabledEnvVar         = "CHECKPOINT_ENABLED"
+	NutanixProviderEnvVar           = "NUTANIX_PROVIDER"
 )
 
 func FeedGates(featureGates []string) {
@@ -52,6 +53,13 @@ func SnowProvider() Feature {
 	return Feature{
 		Name:     "Snow provider support",
 		IsActive: globalFeatures.isActiveForEnvVar(SnowProviderEnvVar),
+	}
+}
+
+func NutanixProvider() Feature {
+	return Feature{
+		Name:     "Nutanix provider support",
+		IsActive: globalFeatures.isActiveForEnvVar(NutanixProviderEnvVar),
 	}
 }
 
