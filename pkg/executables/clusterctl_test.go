@@ -528,6 +528,12 @@ var versionBundle = &cluster.VersionsBundle{
 			},
 			KubeProxy: kubeProxyVersion08,
 		},
+		Nutanix: v1alpha1.NutanixBundle{
+			Version: "v0.4.0",
+			ClusterAPIController: v1alpha1.Image{
+				URI: "ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0",
+			},
+		},
 	},
 }
 
