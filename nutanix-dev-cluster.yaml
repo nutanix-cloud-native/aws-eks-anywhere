@@ -1,0 +1,101 @@
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: Cluster
+metadata:
+  name: nutanix-dev-cluster
+spec:
+  clusterNetwork:
+    cniConfig:
+      cilium: {}
+    pods:
+      cidrBlocks:
+      - 192.168.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+  controlPlaneConfiguration:
+    count: 3
+    endpoint:
+      host: "10.40.142.9"
+    machineGroupRef:
+      kind: NutanixMachineConfig
+      name: nutanix-dev-cluster-cp
+  datacenterRef:
+    kind: NutanixDatacenterConfig
+    name: nutanix-dev-cluster
+  kubernetesVersion: "1.23"
+  managementCluster:
+    name: nutanix-dev-cluster
+  workerNodeGroupConfigurations:
+  - count: 3
+    machineGroupRef:
+      kind: NutanixMachineConfig
+      name: nutanix-dev-cluster
+    name: md-0
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: NutanixDatacenterConfig
+metadata:
+  name: nutanix-dev-cluster
+spec:
+  endpoint: "prism-ganon.ntnxsherlock.com"
+  port: 9440
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: NutanixMachineConfig
+metadata:
+  name: nutanix-dev-cluster-cp
+spec:
+  cluster:
+    name: "ganon"
+    type: name
+    uuid: null
+  image:
+    name: "ubuntu-2004-kube-v1.23.8.qcow2"
+    type: name
+    uuid: null
+  memorySize: 4Gi
+  osFamily: ubuntu
+  subnet:
+    name: "sherlock_net"
+    type: name
+    uuid: null
+  systemDiskSize: 40Gi
+  users:
+  - name: nutanix-user
+    sshAuthorizedKeys:
+    - ssh-rsa AAAA...
+  vcpuSockets: 2
+  vcpusPerSocket: 1
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: NutanixMachineConfig
+metadata:
+  name: nutanix-dev-cluster
+spec:
+  cluster:
+    name: "ganon"
+    type: name
+    uuid: null
+  image:
+    name: "ubuntu-2004-kube-v1.23.8.qcow2"
+    type: name
+    uuid: null
+  memorySize: 4Gi
+  osFamily: ubuntu
+  subnet:
+    name: "sherlock_net"
+    type: name
+    uuid: null
+  systemDiskSize: 40Gi
+  users:
+  - name: nutanix-user
+    sshAuthorizedKeys:
+    - ssh-rsa AAAA...
+  vcpuSockets: 2
+  vcpusPerSocket: 1
+
+---
+
