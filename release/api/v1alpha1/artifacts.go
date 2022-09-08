@@ -127,7 +127,6 @@ func (vb *VersionsBundle) SnowImages() []Image {
 	return i
 }
 
-<<<<<<< HEAD
 func (vb *VersionsBundle) TinkerbellImages() []Image {
 	return []Image{
 		vb.Tinkerbell.ClusterAPIController,
@@ -220,6 +219,6 @@ func (vb *VersionsBundle) Charts() map[string]*Image {
 	return map[string]*Image{
 		"cilium":                &vb.Cilium.HelmChart,
 		"eks-anywhere-packages": &vb.PackageController.HelmChart,
-		"tinkerbell-chart": &vb.Tinkerbell.TinkerbellStack.TinkebellChart,
+		"tinkerbell-chart":      &vb.Tinkerbell.TinkerbellStack.TinkebellChart,
 	}
 }
