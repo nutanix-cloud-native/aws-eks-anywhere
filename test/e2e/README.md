@@ -52,6 +52,29 @@ GOVC_URL
 T_VSPHERE_CLUSTER_IP_POOL # comma-separated list of CP ip addresses
 ```
 
+# Nutanix tests requisites
+ The following env variables need to be set:
+
+ ```sh
+ T_NUTANIX_ENDPOINT
+ T_NUTANIX_PORT
+ T_NUTANIX_USER
+ T_NUTANIX_PASSWORD
+ T_NUTANIX_INSECURE
+ T_NUTANIX_MACHINE_BOOT_TYPE
+ T_NUTANIX_MACHINE_MEMORY_SIZE
+ T_NUTANIX_SYSTEMDISK_SIZE
+ T_NUTANIX_MACHINE_VCPU_PER_SOCKET
+ T_NUTANIX_MACHINE_VCPU_SOCKET
+ T_NUTANIX_MACHINE_TEMPLATE_IMAGE_NAME
+ T_NUTANIX_PRISM_ELEMENT_CLUSTER_NAME
+ T_NUTANIX_SSH_AUTHORIZED_KEY
+ T_NUTANIX_SUBNET_NAME
+ T_NUTANIX_CONTROL_PLANE_ENDPOINT_IP
+ T_NUTANIX_POD_CIDR
+ T_NUTANIX_SERVICE_CIDR
+ ```
+
 ### Tests upgrading from old release
 
 If you are running tests that create clusters using an old release and upgrade to the new one (eg. `TestVSphereKubernetes121BottlerocketUpgradeFromLatestMinorRelease`), you will need extra variables for the templates.
