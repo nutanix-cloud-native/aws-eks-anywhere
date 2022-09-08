@@ -127,7 +127,6 @@ func (vb *VersionsBundle) SnowImages() []Image {
 	return i
 }
 
-<<<<<<< HEAD
 func (vb *VersionsBundle) TinkerbellImages() []Image {
 	return []Image{
 		vb.Tinkerbell.ClusterAPIController,
