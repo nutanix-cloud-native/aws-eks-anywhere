@@ -74,6 +74,7 @@ T_VSPHERE_CLUSTER_IP_POOL # comma-separated list of CP ip addresses
  T_NUTANIX_CONTROL_PLANE_ENDPOINT_IP
  T_NUTANIX_POD_CIDR
  T_NUTANIX_SERVICE_CIDR
+ T_NUTANIX_ADDITIONAL_TRUST_BUNDLE
  ```
 
 ### Tests upgrading from old release
