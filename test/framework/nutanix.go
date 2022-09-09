@@ -26,8 +26,12 @@ const (
 	nutanixControlPlaneEndpointIP = "T_NUTANIX_CONTROL_PLANE_ENDPOINT_IP"
 	nutanixPodCidrVar             = "T_NUTANIX_POD_CIDR"
 	nutanixServiceCidrVar         = "T_NUTANIX_SERVICE_CIDR"
-)
 
+	nutanixTemplateUbuntu120Var = "T_NUTANIX_TEMPLATE_UBUNTU_1_20"
+	nutanixTemplateUbuntu121Var = "T_NUTANIX_TEMPLATE_UBUNTU_1_21"
+	nutanixTemplateUbuntu122Var = "T_NUTANIX_TEMPLATE_UBUNTU_1_22"
+	nutanixTemplateUbuntu123Var = "T_NUTANIX_TEMPLATE_UBUNTU_1_23"
+)
 
 type Nutanix struct {
 	t                      *testing.T
@@ -57,6 +61,10 @@ func NewNutanix(t *testing.T, opts ...NutanixOpt) *Nutanix {
 		nutanixControlPlaneEndpointIP,
 		nutanixPodCidrVar,
 		nutanixServiceCidrVar,
+		// nutanixTemplateUbuntu120Var,
+		// nutanixTemplateUbuntu121Var,
+		// nutanixTemplateUbuntu122Var,
+		// nutanixTemplateUbuntu123Var,
 	}
 	checkRequiredEnvVars(t, requiredNutanixEnvVars)
 
@@ -127,10 +135,20 @@ func (s *Nutanix) customizeProviderConfig(file string, fillers ...api.NutanixFil
 	return providerOutput
 }
 
-func WithNutanixUbuntu121() NutanixOpt {
-	return func(v *Nutanix) {
-		v.fillers = append(v.fillers,
-			api.WithNutanixInt32FromEnvVar(nutanixMachineVCPUsPerSocket, api.WithNutanixMachineVCPUsPerSocket),
-		)
+func (s *Nutanix) WithProviderUpgrade(fillers ...api.NutanixFiller) ClusterE2ETestOpt {
+	return func(e *ClusterE2ETest) {
+		e.ProviderConfigB = s.customizeProviderConfig(e.ClusterConfigLocation, fillers...)
 	}
+}
+
+func UpdateNutanixUbuntuTemplate121Var() api.NutanixFiller {
+	return api.WithNutanixStringFromEnvVar(nutanixTemplateUbuntu121Var, api.WithNutanixMachineTemplateImageName)
+}
+
+func UpdateNutanixUbuntuTemplate122Var() api.NutanixFiller {
+	return api.WithNutanixStringFromEnvVar(nutanixTemplateUbuntu122Var, api.WithNutanixMachineTemplateImageName)
+}
+
+func UpdateNutanixUbuntuTemplate123Var() api.NutanixFiller {
+	return api.WithNutanixStringFromEnvVar(nutanixTemplateUbuntu123Var, api.WithNutanixMachineTemplateImageName)
 }

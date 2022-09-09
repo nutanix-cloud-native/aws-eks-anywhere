@@ -805,3 +805,51 @@ func TestTinkerbellKubernetes122UbuntuTo123Upgrade(t *testing.T) {
 		provider.WithProviderUpgrade(framework.UpdateTinkerbellUbuntuTemplate123Var()),
 	)
 }
+
+func TestNutanixKubernetes120To121UbuntuUpgrade(t *testing.T) {
+	provider := framework.NewNutanix(t)
+	test := framework.NewClusterE2ETest(
+		t,
+		provider,
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube121)),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runSimpleUpgradeFlow(
+		test,
+		v1alpha1.Kube121,
+		framework.WithClusterUpgrade(api.WithKubernetesVersion(v1alpha1.Kube122)),
+		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate122Var()),
+	)
+}
+
+func TestNutanixKubernetes121To122UbuntuUpgrade(t *testing.T) {
+	provider := framework.NewNutanix(t)
+	test := framework.NewClusterE2ETest(
+		t,
+		provider,
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube121)),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runSimpleUpgradeFlow(
+		test,
+		v1alpha1.Kube122,
+		framework.WithClusterUpgrade(api.WithKubernetesVersion(v1alpha1.Kube122)),
+		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate122Var()),
+	)
+}
+
+func TestNutanixKubernetes122To123UbuntuUpgrade(t *testing.T) {
+	provider := framework.NewNutanix(t)
+	test := framework.NewClusterE2ETest(
+		t,
+		provider,
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube121)),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runSimpleUpgradeFlow(
+		test,
+		v1alpha1.Kube122,
+		framework.WithClusterUpgrade(api.WithKubernetesVersion(v1alpha1.Kube122)),
+		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate122Var()),
+	)
+}
