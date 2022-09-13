@@ -691,14 +691,14 @@ spec:
         imageDigest: sha256:49cb349b634d6ed66b443413bc3ac01290ea441bc3743003cbbc45f7bcff7b8b
         name: cluster-api-nutanix-controller
         os: linux
-        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0
+        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.5.0
       clusterTemplate:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/cluster-template.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/cluster-template.yaml
       components:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/infrastructure-components.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/infrastructure-components.yaml
       metadata:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/metadata.yaml
-      version: v0.4.0
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/metadata.yaml
+      version: v0.5.0
     vSphere:
       clusterAPIController:
         arch:
@@ -1453,14 +1453,14 @@ spec:
         imageDigest: sha256:49cb349b634d6ed66b443413bc3ac01290ea441bc3743003cbbc45f7bcff7b8b
         name: cluster-api-nutanix-controller
         os: linux
-        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0
+        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.5.0
       clusterTemplate:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/cluster-template.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/cluster-template.yaml
       components:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/infrastructure-components.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/infrastructure-components.yaml
       metadata:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/metadata.yaml
-      version: v0.4.0
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/metadata.yaml
+      version: v0.5.0
     vSphere:
       clusterAPIController:
         arch:
@@ -2215,14 +2215,14 @@ spec:
         imageDigest: sha256:49cb349b634d6ed66b443413bc3ac01290ea441bc3743003cbbc45f7bcff7b8b
         name: cluster-api-nutanix-controller
         os: linux
-        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0
+        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.5.0
       clusterTemplate:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/cluster-template.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/cluster-template.yaml
       components:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/infrastructure-components.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/infrastructure-components.yaml
       metadata:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/metadata.yaml
-      version: v0.4.0
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/metadata.yaml
+      version: v0.5.0
     vSphere:
       clusterAPIController:
         arch:
@@ -2977,14 +2977,14 @@ spec:
         imageDigest: sha256:49cb349b634d6ed66b443413bc3ac01290ea441bc3743003cbbc45f7bcff7b8b
         name: cluster-api-nutanix-controller
         os: linux
-        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0
+        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.5.0
       clusterTemplate:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/cluster-template.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/cluster-template.yaml
       components:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/infrastructure-components.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/infrastructure-components.yaml
       metadata:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/metadata.yaml
-      version: v0.4.0
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/metadata.yaml
+      version: v0.5.0
     vSphere:
       clusterAPIController:
         arch:
@@ -3721,14 +3721,14 @@ spec:
         imageDigest: sha256:49cb349b634d6ed66b443413bc3ac01290ea441bc3743003cbbc45f7bcff7b8b
         name: cluster-api-nutanix-controller
         os: linux
-        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.4.0
+        uri: ghcr.io/nutanix-cloud-native/cluster-api-provider-nutanix/controller:v0.5.0
       clusterTemplate:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/cluster-template.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/cluster-template.yaml
       components:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/infrastructure-components.yaml
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/infrastructure-components.yaml
       metadata:
-        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.4.0/metadata.yaml
-      version: v0.4.0
+        uri: https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix/releases/download/v0.5.0/metadata.yaml
+      version: v0.5.0
     vSphere:
       clusterAPIController:
         arch:
