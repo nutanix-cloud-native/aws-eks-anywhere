@@ -315,7 +315,7 @@ func (p *nutanixProvider) EnvMap(_ *cluster.Spec) (map[string]string, error) {
 
 func (p *nutanixProvider) GetDeployments() map[string][]string {
 	return map[string][]string{
-		"capx-system": {"controller-manager"},
+		"capx-system": {"capx-controller-manager"},
 	}
 }
 
