@@ -5629,7 +5629,7 @@ spec:
       containers:
       - args:
         - --leader-elect
-        image: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.10.1-eks-a-v0.0.0-dev-build.3498
+        image: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4049
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
