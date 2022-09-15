@@ -5255,6 +5255,8 @@ rules:
   - snowmachineconfigs
   - vspheredatacenterconfigs
   - vspheremachineconfigs
+  - nutanixdatacenterconfigs
+  - nutanixmachineconfigs
   verbs:
   - create
   - delete
@@ -5275,6 +5277,8 @@ rules:
   - snowmachineconfigs/finalizers
   - vspheredatacenterconfigs/finalizers
   - vspheremachineconfigs/finalizers
+  - nutanixdatacenterconfigs/finalizers
+  - nutanixmachineconfigs/finalizers
   verbs:
   - update
 - apiGroups:
@@ -5289,6 +5293,8 @@ rules:
   - snowmachineconfigs/status
   - vspheredatacenterconfigs/status
   - vspheremachineconfigs/status
+  - nutanixdatacenterconfigs/status
+  - nutanixmachineconfigs/status
   verbs:
   - get
   - patch
