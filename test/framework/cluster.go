@@ -39,7 +39,7 @@ import (
 const (
 	defaultClusterConfigFile         = "cluster.yaml"
 	defaultBundleReleaseManifestFile = "bin/local-bundle-release.yaml"
-	defaultEksaBinaryLocation        = "eksctl anywhere"
+	defaultEksaBinaryLocation        = "bin/eksctl-anywhere" // TODO Revert me, local e2e test specific
 	defaultClusterName               = "eksa-test"
 	eksctlVersionEnvVar              = "EKSCTL_VERSION"
 	eksctlVersionEnvVarDummyVal      = "ham sandwich"

@@ -308,7 +308,7 @@ spec:
         os: linux
         uri: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4012
       components:
-        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/ad0d62b5a8cfb7bb61cb020fabb91d00d0388d1c/config/manifest/eksa-components.yaml
+        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/e90667c709b3135008a9520c1cc75d37af446fa0/config/manifest/eksa-components.yaml
       diagnosticCollector:
         arch:
         - amd64
@@ -1070,7 +1070,7 @@ spec:
         os: linux
         uri: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4012
       components:
-        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/ad0d62b5a8cfb7bb61cb020fabb91d00d0388d1c/config/manifest/eksa-components.yaml
+        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/e90667c709b3135008a9520c1cc75d37af446fa0/config/manifest/eksa-components.yaml
       diagnosticCollector:
         arch:
         - amd64
@@ -1832,7 +1832,7 @@ spec:
         os: linux
         uri: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4012
       components:
-        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/ad0d62b5a8cfb7bb61cb020fabb91d00d0388d1c/config/manifest/eksa-components.yaml
+        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/e90667c709b3135008a9520c1cc75d37af446fa0/config/manifest/eksa-components.yaml
       diagnosticCollector:
         arch:
         - amd64
@@ -2594,7 +2594,7 @@ spec:
         os: linux
         uri: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4012
       components:
-        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/ad0d62b5a8cfb7bb61cb020fabb91d00d0388d1c/config/manifest/eksa-components.yaml
+        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/e90667c709b3135008a9520c1cc75d37af446fa0/config/manifest/eksa-components.yaml
       diagnosticCollector:
         arch:
         - amd64
@@ -3338,7 +3338,7 @@ spec:
         os: linux
         uri: public.ecr.aws/l0g8r8j6/eks-anywhere-cluster-controller:v0.11.2-eks-a-v0.0.0-dev-build.4012
       components:
-        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/ad0d62b5a8cfb7bb61cb020fabb91d00d0388d1c/config/manifest/eksa-components.yaml
+        uri: https://raw.githubusercontent.com/nutanix-cloud-native/aws-eks-anywhere/e90667c709b3135008a9520c1cc75d37af446fa0/config/manifest/eksa-components.yaml
       diagnosticCollector:
         arch:
         - amd64
