@@ -1779,9 +1779,9 @@ spec:
                             os:
                               description: Operating system of the asset
                               enum:
-                                - linux
-                                - darwin
-                                - windows
+                              - linux
+                              - darwin
+                              - windows
                               type: string
                             osName:
                               description: Name of the OS like ubuntu, bottlerocket
@@ -1811,11 +1811,11 @@ spec:
                         version:
                           type: string
                       required:
-                        - clusterAPIController
-                        - clusterTemplate
-                        - components
-                        - metadata
-                        - version
+                      - clusterAPIController
+                      - clusterTemplate
+                      - components
+                      - metadata
+                      - version
                       type: object
                     packageController:
                       properties:
@@ -3048,8 +3048,8 @@ spec:
                   - flux
                   - kindnetd
                   - kubeVersion
-                  - packageController
                   - nutanix
+                  - packageController
                   - vSphere
                   type: object
                 type: array
@@ -5252,11 +5252,11 @@ rules:
   - cloudstackmachineconfigs
   - clusters
   - dockerdatacenterconfigs
+  - nutanixdatacenterconfigs
+  - nutanixmachineconfigs
   - snowmachineconfigs
   - vspheredatacenterconfigs
   - vspheremachineconfigs
-  - nutanixdatacenterconfigs
-  - nutanixmachineconfigs
   verbs:
   - create
   - delete
@@ -5277,8 +5277,6 @@ rules:
   - snowmachineconfigs/finalizers
   - vspheredatacenterconfigs/finalizers
   - vspheremachineconfigs/finalizers
-  - nutanixdatacenterconfigs/finalizers
-  - nutanixmachineconfigs/finalizers
   verbs:
   - update
 - apiGroups:
@@ -5293,8 +5291,6 @@ rules:
   - snowmachineconfigs/status
   - vspheredatacenterconfigs/status
   - vspheremachineconfigs/status
-  - nutanixdatacenterconfigs/status
-  - nutanixmachineconfigs/status
   verbs:
   - get
   - patch

@@ -1611,9 +1611,9 @@ spec:
                             os:
                               description: Operating system of the asset
                               enum:
-                                - linux
-                                - darwin
-                                - windows
+                              - linux
+                              - darwin
+                              - windows
                               type: string
                             osName:
                               description: Name of the OS like ubuntu, bottlerocket
@@ -1643,11 +1643,11 @@ spec:
                         version:
                           type: string
                       required:
-                        - clusterAPIController
-                        - clusterTemplate
-                        - components
-                        - metadata
-                        - version
+                      - clusterAPIController
+                      - clusterTemplate
+                      - components
+                      - metadata
+                      - version
                       type: object
                     packageController:
                       properties:
@@ -2880,9 +2880,9 @@ spec:
                   - flux
                   - kindnetd
                   - kubeVersion
+                  - nutanix
                   - packageController
                   - vSphere
-                  - nutanix
                   type: object
                 type: array
             required:

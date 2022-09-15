@@ -419,6 +419,7 @@ func (f *Factory) WithProvider(clusterConfigFile string, clusterConfig *v1alpha1
 				datacenterConfig,
 				machineConfigs,
 				clusterConfig,
+				f.dependencies.Kubectl,
 				time.Now,
 			)
 		default:
