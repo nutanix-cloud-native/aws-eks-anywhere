@@ -3,7 +3,6 @@ package nutanix
 import (
 	"context"
 	_ "embed"
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -180,13 +179,11 @@ func (p *nutanixProvider) SetupAndValidateDeleteCluster(ctx context.Context, clu
 }
 
 func (p *nutanixProvider) SetupAndValidateUpgradeCluster(ctx context.Context, _ *types.Cluster, _ *cluster.Spec, _ *cluster.Spec) error {
-	// TODO: Add validations when this is supported
 	if err := setupEnvVars(p.datacenterConfig); err != nil {
 		return fmt.Errorf("failed setup and validations: %v", err)
 	}
 
-	// TODO
-	return errors.New("upgrade for nutanix provider isn't currently supported")
+	return nil
 }
 
 func (p *nutanixProvider) UpdateSecrets(ctx context.Context, cluster *types.Cluster) error {
@@ -271,7 +268,7 @@ func (ntb *NutanixTemplateBuilder) GenerateCAPISpecWorkers(clusterSpec *cluster.
 	return templater.AppendYamlResources(workerSpecs...), nil
 }
 
-func (p *nutanixProvider) GenerateCAPISpecForCreate(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
+func (p *nutanixProvider) generateCAPISpec(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
 	clusterName := clusterSpec.Cluster.Name
 
 	cpOpt := func(values map[string]interface{}) {
@@ -297,9 +294,12 @@ func (p *nutanixProvider) GenerateCAPISpecForCreate(ctx context.Context, cluster
 	return controlPlaneSpec, workersSpec, nil
 }
 
+func (p *nutanixProvider) GenerateCAPISpecForCreate(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
+	return p.generateCAPISpec(ctx, cluster, clusterSpec)
+}
+
 func (p *nutanixProvider) GenerateCAPISpecForUpgrade(ctx context.Context, bootstrapCluster, workloadCluster *types.Cluster, currentSpec, newClusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
-	// TODO: implement
-	return nil, nil, nil
+	return p.generateCAPISpec(ctx, bootstrapCluster, newClusterSpec)
 }
 
 func (p *nutanixProvider) GenerateStorageClass() []byte {

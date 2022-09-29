@@ -818,7 +818,7 @@ func TestNutanixKubernetes120To121UbuntuUpgrade(t *testing.T) {
 		test,
 		v1alpha1.Kube121,
 		framework.WithClusterUpgrade(api.WithKubernetesVersion(v1alpha1.Kube121)),
-		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate122Var()),
+		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate121Var()),
 	)
 }
 
@@ -848,8 +848,8 @@ func TestNutanixKubernetes122To123UbuntuUpgrade(t *testing.T) {
 	)
 	runSimpleUpgradeFlow(
 		test,
-		v1alpha1.Kube122,
+		v1alpha1.Kube123,
 		framework.WithClusterUpgrade(api.WithKubernetesVersion(v1alpha1.Kube123)),
-		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate122Var()),
+		provider.WithProviderUpgrade(framework.UpdateNutanixUbuntuTemplate123Var()),
 	)
 }
