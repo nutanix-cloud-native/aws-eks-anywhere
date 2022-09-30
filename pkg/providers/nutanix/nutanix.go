@@ -331,9 +331,9 @@ func (p *nutanixProvider) UpdateKubeConfig(content *[]byte, clusterName string) 
 }
 
 func (p *nutanixProvider) machineConfigsSpecChanged(ctx context.Context, cc *v1alpha1.Cluster, cluster *types.Cluster, newClusterSpec *cluster.Spec) (bool, error) {
-	machineConfigMap := make(map[string]*v1alpha1.VSphereMachineConfig)
+	machineConfigMap := make(map[string]*v1alpha1.NutanixMachineConfig)
 	for _, config := range p.MachineConfigs(nil) {
-		mc := config.(*v1alpha1.VSphereMachineConfig)
+		mc := config.(*v1alpha1.NutanixMachineConfig)
 		machineConfigMap[mc.Name] = mc
 	}
 
