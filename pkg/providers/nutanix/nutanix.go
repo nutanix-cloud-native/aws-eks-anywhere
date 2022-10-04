@@ -273,7 +273,7 @@ func (ntb *NutanixTemplateBuilder) GenerateCAPISpecWorkers(clusterSpec *cluster.
 	return templater.AppendYamlResources(workerSpecs...), nil
 }
 
-func (p *nutanixProvider) generateCAPISpec(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
+func (p *nutanixProvider) generateCAPISpecForCreate(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
 	clusterName := clusterSpec.Cluster.Name
 
 	cpOpt := func(values map[string]interface{}) {
@@ -300,11 +300,206 @@ func (p *nutanixProvider) generateCAPISpec(ctx context.Context, cluster *types.C
 }
 
 func (p *nutanixProvider) GenerateCAPISpecForCreate(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
-	return p.generateCAPISpec(ctx, cluster, clusterSpec)
+	return p.generateCAPISpecForCreate(ctx, cluster, clusterSpec)
+}
+
+func NeedsNewControlPlaneTemplate(oldSpec, newSpec *cluster.Spec, oldNdc, newNdc *v1alpha1.NutanixDatacenterConfig, oldNmc, newNmc *v1alpha1.NutanixMachineConfig) bool {
+	// Another option is to generate MachineTemplates based on the old and new eksa spec,
+	// remove the name field and compare them with DeepEqual
+	// We plan to approach this way since it's more flexible to add/remove fields and test out for validation
+	if oldSpec.Cluster.Spec.KubernetesVersion != newSpec.Cluster.Spec.KubernetesVersion {
+		return true
+	}
+	if oldSpec.Cluster.Spec.ControlPlaneConfiguration.Endpoint.Host != newSpec.Cluster.Spec.ControlPlaneConfiguration.Endpoint.Host {
+		return true
+	}
+	if oldSpec.Bundles.Spec.Number != newSpec.Bundles.Spec.Number {
+		return true
+	}
+	return AnyImmutableFieldChanged(oldNdc, newNdc, oldNmc, newNmc)
+}
+
+func AnyImmutableFieldChanged(oldNdc, newNdc *v1alpha1.NutanixDatacenterConfig, oldNmc, newNmc *v1alpha1.NutanixMachineConfig) bool {
+	if oldNmc.Spec.Image != newNmc.Spec.Image {
+		return true
+	}
+	if oldNmc.Spec.MemorySize != newNmc.Spec.MemorySize {
+		return true
+	}
+	if oldNmc.Spec.SystemDiskSize != newNmc.Spec.SystemDiskSize {
+		return true
+	}
+	if oldNmc.Spec.VCPUSockets != newNmc.Spec.VCPUSockets {
+		return true
+	}
+	if oldNmc.Spec.VCPUsPerSocket != newNmc.Spec.VCPUsPerSocket {
+		return true
+	}
+	if oldNmc.Spec.Cluster != newNmc.Spec.Cluster {
+		return true
+	}
+	if oldNmc.Spec.Subnet != newNmc.Spec.Subnet {
+		return true
+	}
+	if oldNmc.Spec.OSFamily != newNmc.Spec.OSFamily {
+		return true
+	}
+
+	return false
+}
+
+func (p *nutanixProvider) getWorkerNodeMachineConfigs(ctx context.Context, workloadCluster *types.Cluster, newClusterSpec *cluster.Spec, workerNodeGroupConfiguration v1alpha1.WorkerNodeGroupConfiguration, prevWorkerNodeGroupConfigs map[string]v1alpha1.WorkerNodeGroupConfiguration) (*v1alpha1.NutanixMachineConfig, *v1alpha1.NutanixMachineConfig, error) {
+	if _, ok := prevWorkerNodeGroupConfigs[workerNodeGroupConfiguration.Name]; ok {
+		oldWorkerMachineConfig := p.machineConfigs[workerNodeGroupConfiguration.MachineGroupRef.Name]
+		newWorkerMachineConfig, err := p.providerKubectlClient.GetEksaNutanixMachineConfig(ctx, workerNodeGroupConfiguration.MachineGroupRef.Name, workloadCluster.KubeconfigFile, newClusterSpec.Cluster.Namespace)
+		if err != nil {
+			return oldWorkerMachineConfig, nil, err
+		}
+		return oldWorkerMachineConfig, newWorkerMachineConfig, nil
+	}
+	return nil, nil, nil
+}
+
+func (p *nutanixProvider) needsNewMachineTemplate(currentSpec, newClusterSpec *cluster.Spec, workerNodeGroupConfiguration v1alpha1.WorkerNodeGroupConfiguration, ndc *v1alpha1.NutanixDatacenterConfig, prevWorkerNodeGroupConfigs map[string]v1alpha1.WorkerNodeGroupConfiguration, oldWorkerMachineConfig *v1alpha1.NutanixMachineConfig, newWorkerMachineConfig *v1alpha1.NutanixMachineConfig) (bool, error) {
+	if _, ok := prevWorkerNodeGroupConfigs[workerNodeGroupConfiguration.Name]; ok {
+		needsNewWorkloadTemplate := NeedsNewWorkloadTemplate(currentSpec, newClusterSpec, ndc, p.datacenterConfig, oldWorkerMachineConfig, newWorkerMachineConfig)
+		return needsNewWorkloadTemplate, nil
+	}
+	return true, nil
+}
+
+func (p *nutanixProvider) needsNewKubeadmConfigTemplate(workerNodeGroupConfiguration v1alpha1.WorkerNodeGroupConfiguration, prevWorkerNodeGroupConfigs map[string]v1alpha1.WorkerNodeGroupConfiguration, oldWorkerNodeNmc *v1alpha1.NutanixMachineConfig, newWorkerNodeNmc *v1alpha1.NutanixMachineConfig) (bool, error) {
+	if _, ok := prevWorkerNodeGroupConfigs[workerNodeGroupConfiguration.Name]; ok {
+		existingWorkerNodeGroupConfig := prevWorkerNodeGroupConfigs[workerNodeGroupConfiguration.Name]
+		return NeedsNewKubeadmConfigTemplate(&workerNodeGroupConfiguration, &existingWorkerNodeGroupConfig, oldWorkerNodeNmc, newWorkerNodeNmc), nil
+	}
+	return true, nil
+}
+
+func NeedsNewWorkloadTemplate(oldSpec, newSpec *cluster.Spec, oldNdc, newNdc *v1alpha1.NutanixDatacenterConfig, oldNmc, newNmc *v1alpha1.NutanixMachineConfig) bool {
+	if oldSpec.Cluster.Spec.KubernetesVersion != newSpec.Cluster.Spec.KubernetesVersion {
+		return true
+	}
+	if oldSpec.Bundles.Spec.Number != newSpec.Bundles.Spec.Number {
+		return true
+	}
+	if !v1alpha1.WorkerNodeGroupConfigurationSliceTaintsEqual(oldSpec.Cluster.Spec.WorkerNodeGroupConfigurations, newSpec.Cluster.Spec.WorkerNodeGroupConfigurations) ||
+		!v1alpha1.WorkerNodeGroupConfigurationsLabelsMapEqual(oldSpec.Cluster.Spec.WorkerNodeGroupConfigurations, newSpec.Cluster.Spec.WorkerNodeGroupConfigurations) {
+		return true
+	}
+	return AnyImmutableFieldChanged(oldNdc, newNdc, oldNmc, newNmc)
+}
+
+func NeedsNewKubeadmConfigTemplate(newWorkerNodeGroup *v1alpha1.WorkerNodeGroupConfiguration, oldWorkerNodeGroup *v1alpha1.WorkerNodeGroupConfiguration, oldWorkerNodeNmc *v1alpha1.NutanixMachineConfig, newWorkerNodeNmc *v1alpha1.NutanixMachineConfig) bool {
+	return !v1alpha1.TaintsSliceEqual(newWorkerNodeGroup.Taints, oldWorkerNodeGroup.Taints) || !v1alpha1.LabelsMapEqual(newWorkerNodeGroup.Labels, oldWorkerNodeGroup.Labels) ||
+		!v1alpha1.UsersSliceEqual(oldWorkerNodeNmc.Spec.Users, newWorkerNodeNmc.Spec.Users)
+}
+
+func (p *nutanixProvider) generateCAPISpecForUpgrade(ctx context.Context, bootstrapCluster, workloadCluster *types.Cluster, currentSpec, newClusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
+	clusterName := newClusterSpec.Cluster.Name
+	var controlPlaneTemplateName, workloadTemplateName, kubeadmconfigTemplateName, etcdTemplateName string
+
+	// Get existing EKSA Cluster
+	eksaCluster, err := p.providerKubectlClient.GetEksaCluster(ctx, workloadCluster, newClusterSpec.Cluster.Name)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Get current Nutanix Datacenter Config
+	ndc, err := p.providerKubectlClient.GetEksaNutanixDatacenterConfig(ctx, p.datacenterConfig.Name, workloadCluster.KubeconfigFile, newClusterSpec.Cluster.Namespace)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Get current Nutanix Machine Config
+	controlPlaneMachineConfig := p.machineConfigs[newClusterSpec.Cluster.Spec.ControlPlaneConfiguration.MachineGroupRef.Name]
+	controlPlaneNutanixMachineConfig, err := p.providerKubectlClient.GetEksaNutanixMachineConfig(ctx,
+		eksaCluster.Spec.ControlPlaneConfiguration.MachineGroupRef.Name,
+		workloadCluster.KubeconfigFile,
+		newClusterSpec.Cluster.Namespace)
+	if err != nil {
+		return nil, nil, err
+	}
+	needsNewControlPlaneTemplate := NeedsNewControlPlaneTemplate(currentSpec,
+		newClusterSpec,
+		ndc,
+		p.datacenterConfig,
+		controlPlaneNutanixMachineConfig,
+		controlPlaneMachineConfig)
+	if !needsNewControlPlaneTemplate {
+		cp, err := p.providerKubectlClient.GetKubeadmControlPlane(ctx, workloadCluster, eksaCluster.Name, executables.WithCluster(bootstrapCluster), executables.WithNamespace(constants.EksaSystemNamespace))
+		if err != nil {
+			return nil, nil, err
+		}
+		controlPlaneTemplateName = cp.Spec.MachineTemplate.InfrastructureRef.Name
+	} else {
+		controlPlaneTemplateName = common.CPMachineTemplateName(clusterName, p.templateBuilder.now)
+	}
+
+	previousWorkerNodeGroupConfigs := cluster.BuildMapForWorkerNodeGroupsByName(currentSpec.Cluster.Spec.WorkerNodeGroupConfigurations)
+
+	workloadTemplateNames := make(map[string]string, len(newClusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations))
+	kubeadmconfigTemplateNames := make(map[string]string, len(newClusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations))
+	for _, workerNodeGroupConfiguration := range newClusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations {
+
+		oldWorkerNodeNmc, newWorkerNodeNmc, err := p.getWorkerNodeMachineConfigs(ctx, workloadCluster, newClusterSpec, workerNodeGroupConfiguration, previousWorkerNodeGroupConfigs)
+		if err != nil {
+			return nil, nil, err
+		}
+		needsNewWorkloadTemplate, err := p.needsNewMachineTemplate(currentSpec, newClusterSpec, workerNodeGroupConfiguration, ndc, previousWorkerNodeGroupConfigs, oldWorkerNodeNmc, newWorkerNodeNmc)
+		if err != nil {
+			return nil, nil, err
+		}
+		needsNewKubeadmConfigTemplate, err := p.needsNewKubeadmConfigTemplate(workerNodeGroupConfiguration, previousWorkerNodeGroupConfigs, oldWorkerNodeNmc, newWorkerNodeNmc)
+		if err != nil {
+			return nil, nil, err
+		}
+		if !needsNewKubeadmConfigTemplate {
+			mdName := machineDeploymentName(newClusterSpec.Cluster.Name, workerNodeGroupConfiguration.Name)
+			md, err := p.providerKubectlClient.GetMachineDeployment(ctx, mdName, executables.WithCluster(bootstrapCluster), executables.WithNamespace(constants.EksaSystemNamespace))
+			if err != nil {
+				return nil, nil, err
+			}
+			kubeadmconfigTemplateName = md.Spec.Template.Spec.Bootstrap.ConfigRef.Name
+			kubeadmconfigTemplateNames[workerNodeGroupConfiguration.Name] = kubeadmconfigTemplateName
+		} else {
+			kubeadmconfigTemplateName = common.KubeadmConfigTemplateName(clusterName, workerNodeGroupConfiguration.Name, p.templateBuilder.now)
+			kubeadmconfigTemplateNames[workerNodeGroupConfiguration.Name] = kubeadmconfigTemplateName
+		}
+
+		if !needsNewWorkloadTemplate {
+			mdName := machineDeploymentName(newClusterSpec.Cluster.Name, workerNodeGroupConfiguration.Name)
+			md, err := p.providerKubectlClient.GetMachineDeployment(ctx, mdName, executables.WithCluster(bootstrapCluster), executables.WithNamespace(constants.EksaSystemNamespace))
+			if err != nil {
+				return nil, nil, err
+			}
+			workloadTemplateName = md.Spec.Template.Spec.InfrastructureRef.Name
+			workloadTemplateNames[workerNodeGroupConfiguration.Name] = workloadTemplateName
+		} else {
+			workloadTemplateName = common.WorkerMachineTemplateName(clusterName, workerNodeGroupConfiguration.Name, p.templateBuilder.now)
+			workloadTemplateNames[workerNodeGroupConfiguration.Name] = workloadTemplateName
+		}
+		p.templateBuilder.workerNodeGroupMachineSpecs[workerNodeGroupConfiguration.MachineGroupRef.Name] = p.machineConfigs[workerNodeGroupConfiguration.MachineGroupRef.Name].Spec
+	}
+
+	cpOpt := func(values map[string]interface{}) {
+		values["controlPlaneTemplateName"] = controlPlaneTemplateName
+		values["etcdTemplateName"] = etcdTemplateName
+	}
+	controlPlaneSpec, err = p.templateBuilder.GenerateCAPISpecControlPlane(newClusterSpec, cpOpt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	workersSpec, err = p.templateBuilder.GenerateCAPISpecWorkers(newClusterSpec, workloadTemplateNames, kubeadmconfigTemplateNames)
+	if err != nil {
+		return nil, nil, err
+	}
+	return controlPlaneSpec, workersSpec, nil
 }
 
 func (p *nutanixProvider) GenerateCAPISpecForUpgrade(ctx context.Context, bootstrapCluster, workloadCluster *types.Cluster, currentSpec, newClusterSpec *cluster.Spec) (controlPlaneSpec, workersSpec []byte, err error) {
-	return p.generateCAPISpec(ctx, bootstrapCluster, newClusterSpec)
+	return p.generateCAPISpecForUpgrade(ctx, bootstrapCluster, workloadCluster, currentSpec, newClusterSpec)
 }
 
 func (p *nutanixProvider) GenerateStorageClass() []byte {
