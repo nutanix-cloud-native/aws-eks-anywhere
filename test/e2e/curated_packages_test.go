@@ -137,3 +137,51 @@ func TestCPackagesVSphereKubernetes122BottleRocketSimpleFlow(t *testing.T) {
 	)
 	runCuratedPackageInstallSimpleFlow(test)
 }
+
+func TestCPackagesNutanixKubernetes120SimpleFlow(t *testing.T) {
+	test := framework.NewClusterE2ETest(t,
+		framework.NewNutanix(t),
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube120)),
+		framework.WithPackageConfig(t, packageBundleURI(v1alpha1.Kube120),
+			eksaPackageControllerHelmChartName, eksaPackageControllerHelmURI,
+			eksaPackageControllerHelmVersion, eksaPackageControllerHelmValues),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runCuratedPackageInstallSimpleFlow(test)
+}
+
+func TestCPackagesNutanixKubernetes121SimpleFlow(t *testing.T) {
+	test := framework.NewClusterE2ETest(t,
+		framework.NewNutanix(t),
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube121)),
+		framework.WithPackageConfig(t, packageBundleURI(v1alpha1.Kube121),
+			eksaPackageControllerHelmChartName, eksaPackageControllerHelmURI,
+			eksaPackageControllerHelmVersion, eksaPackageControllerHelmValues),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runCuratedPackageInstallSimpleFlow(test)
+}
+
+func TestCPackagesNutanixKubernetes122SimpleFlow(t *testing.T) {
+	test := framework.NewClusterE2ETest(t,
+		framework.NewNutanix(t),
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube122)),
+		framework.WithPackageConfig(t, packageBundleURI(v1alpha1.Kube122),
+			eksaPackageControllerHelmChartName, eksaPackageControllerHelmURI,
+			eksaPackageControllerHelmVersion, eksaPackageControllerHelmValues),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runCuratedPackageInstallSimpleFlow(test)
+}
+
+func TestCPackagesNutanixKubernetes123SimpleFlow(t *testing.T) {
+	test := framework.NewClusterE2ETest(t,
+		framework.NewNutanix(t),
+		framework.WithClusterFiller(api.WithKubernetesVersion(v1alpha1.Kube123)),
+		framework.WithPackageConfig(t, packageBundleURI(v1alpha1.Kube123),
+			eksaPackageControllerHelmChartName, eksaPackageControllerHelmURI,
+			eksaPackageControllerHelmVersion, eksaPackageControllerHelmValues),
+		framework.WithEnvVar("NUTANIX_PROVIDER", "true"),
+	)
+	runCuratedPackageInstallSimpleFlow(test)
+}

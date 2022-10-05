@@ -143,6 +143,10 @@ func (s *Nutanix) WithProviderUpgrade(fillers ...api.NutanixFiller) ClusterE2ETe
 	}
 }
 
+func UpdateNutanixUbuntuTemplate120Var() api.NutanixFiller {
+	return api.WithNutanixStringFromEnvVar(nutanixTemplateUbuntu120Var, api.WithNutanixMachineTemplateImageName)
+}
+
 func UpdateNutanixUbuntuTemplate121Var() api.NutanixFiller {
 	return api.WithNutanixStringFromEnvVar(nutanixTemplateUbuntu121Var, api.WithNutanixMachineTemplateImageName)
 }
