@@ -19,18 +19,45 @@ spec:
         configRef:
           apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
           kind: KubeadmConfigTemplate
-          name: "{{.clusterName}}-kcfg-0"
+          name: "{{.workloadkubeadmconfigTemplateName}}"
       clusterName: "{{.clusterName}}"
       infrastructureRef:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: NutanixMachineTemplate
-        name: "{{.clusterName}}-mt-0"
+        name: "{{.workloadTemplateName}}"
       version: "{{.kubernetesVersion}}"
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+kind: KubeadmConfigTemplate
+metadata:
+  name: "{{.workloadkubeadmconfigTemplateName}}"
+  namespace: "{{.eksaSystemNamespace}}"
+spec:
+  template:
+    spec:
+      joinConfiguration:
+        nodeRegistration:
+          kubeletExtraArgs:
+            # We have to pin the cgroupDriver to cgroupfs as kubeadm >=1.21 defaults to systemd
+            # kind will implement systemd support in: https://github.com/kubernetes-sigs/kind/issues/1726
+            #cgroup-driver: cgroupfs
+            eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+      users:
+        - name: "{{ .workerSshUsername }}"
+          lockPassword: false
+          sudo: ALL=(ALL) NOPASSWD:ALL
+          sshAuthorizedKeys:
+            - "{{.workerSshAuthorizedKey}}"
+      preKubeadmCommands:
+        - echo "before kubeadm call" > /var/log/prekubeadm.log
+      postKubeadmCommands:
+        - echo "after kubeadm call" > /var/log/postkubeadm.log
+      verbosity: 10
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixMachineTemplate
 metadata:
-  name: "{{.clusterName}}-mt-0"
+  name: "{{.workloadTemplateName}}"
   namespace: "{{.eksaSystemNamespace}}"
 spec:
   template:

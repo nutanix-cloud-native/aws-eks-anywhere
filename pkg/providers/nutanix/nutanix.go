@@ -709,6 +709,13 @@ func buildTemplateMapCP(
 		"nutanixAdditionalTrustBundle": datacenterSpec.AdditionalTrustBundle,
 		"nutanixUser":                  creds.username,
 		"nutanixPassword":              creds.password,
+		"vcpusPerSocket":               controlPlaneMachineSpec.VCPUsPerSocket,
+		"vcpuSockets":                  controlPlaneMachineSpec.VCPUSockets,
+		"memorySize":                   controlPlaneMachineSpec.MemorySize.String(),
+		"systemDiskSize":               controlPlaneMachineSpec.SystemDiskSize.String(),
+		"imageName":                    controlPlaneMachineSpec.Image.Name,   //TODO pass name or uuid based on type of identifier
+		"nutanixPEClusterName":         controlPlaneMachineSpec.Cluster.Name, //TODO pass name or uuid based on type of identifier
+		"subnetName":                   controlPlaneMachineSpec.Subnet.Name,  //TODO pass name or uuid based on type of identifier
 	}
 
 	if clusterSpec.Cluster.Spec.ExternalEtcdConfiguration != nil {
