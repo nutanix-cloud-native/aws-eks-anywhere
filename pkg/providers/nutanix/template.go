@@ -1,6 +1,7 @@
 package nutanix
 
 import (
+	_ "embed"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -15,6 +16,18 @@ import (
 	"github.com/aws/eks-anywhere/pkg/templater"
 	"github.com/aws/eks-anywhere/pkg/types"
 )
+
+//go:embed config/cp-template.yaml
+var defaultCAPIConfigCP string
+
+//go:embed config/md-template.yaml
+var defaultClusterConfigMD string
+
+//go:embed config/secret-template.yaml
+var secretTemplate string
+
+//go:embed config/trust-bundle-template.yaml
+var trustBundleConfigMapTemplate string
 
 var jsonMarshal = json.Marshal
 
@@ -106,6 +119,22 @@ func (ntb *TemplateBuilder) GenerateCAPISpecSecret(clusterSpec *cluster.Spec, bu
 	}
 
 	bytes, err := templater.Execute(secretTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	return bytes, nil
+}
+
+// GenerateTrustBundleConfigMap generates the trust bundle configmap containing the base64 encoded trust bundle
+// in the binaryData field of the config map
+func (ntb *TemplateBuilder) GenerateTrustBundleConfigMap(clusterSpec *cluster.Spec, buildOptions ...providers.BuildMapOption) (content []byte, err error) {
+	values := buildTemplateMapTrustBundle([]byte(clusterSpec.NutanixDatacenter.Spec.AdditionalTrustBundle))
+	for _, buildOption := range buildOptions {
+		buildOption(values)
+	}
+
+	bytes, err := templater.Execute(trustBundleConfigMapTemplate, values)
 	if err != nil {
 		return nil, err
 	}
@@ -211,6 +240,14 @@ func buildTemplateMapSecret(clusterSpec *cluster.Spec, creds []byte) map[string]
 		"clusterName":              clusterSpec.Cluster.Name,
 		"eksaSystemNamespace":      constants.EksaSystemNamespace,
 		"base64EncodedCredentials": base64.StdEncoding.EncodeToString(creds),
+	}
+	return values
+}
+
+func buildTemplateMapTrustBundle(trustBundle []byte) map[string]interface{} {
+	values := map[string]interface{}{
+		"eksaSystemNamespace":      constants.EksaSystemNamespace,
+		"base64EncodedTrustBundle": base64.StdEncoding.EncodeToString(trustBundle),
 	}
 	return values
 }

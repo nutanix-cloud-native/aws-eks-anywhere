@@ -7,9 +7,8 @@ spec:
   prismCentral:
 {{- if .nutanixAdditionalTrustBundle }}
     additionalTrustBundle:
-      kind: String
-      data: |
-{{ .nutanixAdditionalTrustBundle | indent 8 }}
+      name: user-ca-bundle
+      kind: ConfigMap
 {{- end }}
     address: "{{.nutanixEndpoint}}"
     port: {{.nutanixPort}}

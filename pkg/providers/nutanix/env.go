@@ -1,6 +1,7 @@
 package nutanix
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -31,6 +32,13 @@ func setupEnvVars(datacenterConfig *anywherev1.NutanixDatacenterConfig) error {
 		}
 	} else {
 		return fmt.Errorf("%s is not set or is empty", constants.EksaNutanixPasswordKey)
+	}
+
+	trustBundle := datacenterConfig.Spec.AdditionalTrustBundle
+	if trustBundle != "" {
+		if err := osSetenv(constants.NutanixAdditionalTrustBundleKey, base64.StdEncoding.EncodeToString([]byte(trustBundle))); err != nil {
+			return fmt.Errorf("unable to set %s: %v", constants.NutanixAdditionalTrustBundleKey, err)
+		}
 	}
 
 	if err := osSetenv(nutanixEndpointKey, datacenterConfig.Spec.Endpoint); err != nil {

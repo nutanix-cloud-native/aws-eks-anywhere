@@ -22,15 +22,6 @@ import (
 	releasev1alpha1 "github.com/aws/eks-anywhere/release/api/v1alpha1"
 )
 
-//go:embed config/cp-template.yaml
-var defaultCAPIConfigCP string
-
-//go:embed config/md-template.yaml
-var defaultClusterConfigMD string
-
-//go:embed config/secret-template.yaml
-var secretTemplate string
-
 //go:embed config/machine-health-check-template.yaml
 var mhcTemplate []byte
 
@@ -202,6 +193,20 @@ func (p *Provider) UpdateSecrets(ctx context.Context, cluster *types.Cluster, cl
 	if err := p.kubectlClient.ApplyKubeSpecFromBytes(ctx, cluster, contents); err != nil {
 		return fmt.Errorf("loading secrets object: %v", err)
 	}
+
+	return p.updateTrustBundleConfigMap(ctx, cluster, clusterSpec)
+}
+
+func (p *Provider) updateTrustBundleConfigMap(ctx context.Context, cluster *types.Cluster, clusterSpec *cluster.Spec) error {
+	contents, err := p.templateBuilder.GenerateTrustBundleConfigMap(clusterSpec)
+	if err != nil {
+		return err
+	}
+
+	if err := p.kubectlClient.ApplyKubeSpecFromBytes(ctx, cluster, contents); err != nil {
+		return fmt.Errorf("loading trust bundle config map: %v", err)
+	}
+
 	return nil
 }
 

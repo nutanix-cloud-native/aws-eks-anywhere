@@ -423,7 +423,7 @@ func TestNutanixProviderSetupAndValidateUpgradeCluster(t *testing.T) {
 func TestNutanixProviderUpdateSecrets(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	executable := mockexecutables.NewMockExecutable(ctrl)
-	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
+	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil).AnyTimes()
 	kubectl := executables.NewKubectl(executable)
 	mockClient := mocknutanix.NewMockClient(ctrl)
 	mockCertValidator := mockCrypto.NewMockTlsValidator(ctrl)
@@ -433,7 +433,7 @@ func TestNutanixProviderUpdateSecrets(t *testing.T) {
 	provider := testNutanixProvider(t, mockClient, kubectl, mockCertValidator, mockHTTPClient)
 
 	cluster := &types.Cluster{Name: "eksa-unit-test"}
-	clusterSpec := test.NewFullClusterSpec(t, "testdata/eksa-cluster.yaml")
+	clusterSpec := test.NewFullClusterSpec(t, "testdata/cluster_nutanix_with_trust_bundle.yaml")
 	err := provider.UpdateSecrets(context.Background(), cluster, clusterSpec)
 	assert.NoError(t, err)
 }
@@ -441,7 +441,7 @@ func TestNutanixProviderUpdateSecrets(t *testing.T) {
 func TestNutanixProviderGenerateCAPISpecForCreate(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	executable := mockexecutables.NewMockExecutable(ctrl)
-	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
+	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil).AnyTimes()
 	kubectl := executables.NewKubectl(executable)
 	mockClient := mocknutanix.NewMockClient(ctrl)
 	mockCertValidator := mockCrypto.NewMockTlsValidator(ctrl)
@@ -481,7 +481,7 @@ func TestNutanixProviderGenerateCAPISpecForCreate_Error(t *testing.T) {
 func TestNutanixProviderGenerateCAPISpecForUpgrade(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	executable := mockexecutables.NewMockExecutable(ctrl)
-	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
+	executable.EXPECT().ExecuteWithStdin(gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil).AnyTimes()
 	executable.EXPECT().Execute(gomock.Any(), "get",
 		"clusters.anywhere.eks.amazonaws.com", "-A", "-o", "jsonpath={.items[0]}", "--kubeconfig", "testdata/kubeconfig.yaml", "--field-selector=metadata.name=eksa-unit-test").Return(*bytes.NewBufferString(nutanixClusterConfigSpecJSON), nil)
 	executable.EXPECT().Execute(gomock.Any(), "get",

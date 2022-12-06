@@ -146,3 +146,24 @@ func TestNutanixTemplateBuilderGenerateCAPISpecForCreateWithAutoscalingConfigura
 	require.NoError(t, err)
 	assert.Equal(t, workerSpec, expectedWorkerSpec)
 }
+
+func TestNewNutanixTemplateBuilderGenerateTrustBundleConfigMap(t *testing.T) {
+	storedMarshal := jsonMarshal
+	jsonMarshal = fakemarshal
+	defer restoremarshal(storedMarshal)
+
+	t.Setenv(constants.NutanixUsernameKey, "admin")
+	t.Setenv(constants.NutanixPasswordKey, "password")
+	creds := GetCredsFromEnv()
+
+	builder := NewNutanixTemplateBuilder(nil, nil, nil, nil, creds, time.Now)
+	assert.NotNil(t, builder)
+
+	v := version.Info{GitVersion: "v0.0.1"}
+	buildSpec, err := cluster.NewSpecFromClusterConfig("testdata/cluster_nutanix_with_trust_bundle.yaml", v, cluster.WithReleasesManifest("testdata/simple_release.yaml"))
+	assert.NoError(t, err)
+
+	trustBundleSpec, err := builder.GenerateTrustBundleConfigMap(buildSpec)
+	assert.NotNil(t, trustBundleSpec)
+	assert.NoError(t, err)
+}
