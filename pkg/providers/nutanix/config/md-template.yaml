@@ -69,6 +69,21 @@ spec:
         - type: uuid
           uuid: "{{.subnetUUID}}"
 {{ end }}
+{{- if .bootType }}
+      bootType: "{{.bootType}}"
+{{ end }}
+{{- if .additionalCategories }}
+      additionalCategories: "{{.additionalCategories}}"
+{{- end }}
+{{- if (eq .nutanixProjectType "name") }}
+      project:
+        type: name
+        name: "{{.nutanixProjectName}}"
+{{- else if (eq .nutanixProjectType "uuid") }}
+      project:
+        type: uuid
+        uuid: "{{.nutanixProjectUUID}}"
+{{ end }}
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: KubeadmConfigTemplate

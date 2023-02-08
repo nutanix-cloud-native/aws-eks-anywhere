@@ -4415,7 +4415,6 @@ spec:
                 type: boolean
               port:
                 description: Port is the Port of Nutanix Prism Central
-                minimum: 9440
                 type: integer
             required:
             - endpoint
@@ -5995,6 +5994,10 @@ rules:
   - cloudstackclusters/status
   - cloudstackmachinetemplates
   - cloudstackmachinetemplates/status
+  - nutanixclusters
+  - nutanixclusters/status
+  - nutanixmachinetemplates
+  - nutanixmachinetemplates/status
   - vsphereclusters
   - vsphereclusters/status
   - vspheremachinetemplates

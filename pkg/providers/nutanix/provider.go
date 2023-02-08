@@ -49,7 +49,6 @@ type Provider struct {
 	machineConfigs   map[string]*v1alpha1.NutanixMachineConfig
 	templateBuilder  *TemplateBuilder
 	kubectlClient    ProviderKubectlClient
-	nutanixClient    Client
 	validator        *Validator
 	writer           filewriter.FileWriter
 }
@@ -63,7 +62,7 @@ func NewProvider(
 	clusterConfig *v1alpha1.Cluster,
 	providerKubectlClient ProviderKubectlClient,
 	writer filewriter.FileWriter,
-	nutanixClient Client,
+	clientBuilder *ClientBuilder,
 	certValidator crypto.TlsValidator,
 	httpClient *http.Client,
 	now types.NowFunc,
@@ -87,14 +86,13 @@ func NewProvider(
 	workerNodeGroupMachineSpecs := make(map[string]v1alpha1.NutanixMachineConfigSpec, len(machineConfigs))
 	templateBuilder := NewNutanixTemplateBuilder(&datacenterConfig.Spec, controlPlaneMachineSpec, etcdMachineSpec, workerNodeGroupMachineSpecs, creds, now)
 
-	nutanixValidator := NewValidator(nutanixClient, certValidator, httpClient)
+	nutanixValidator := NewValidator(clientBuilder, certValidator, httpClient)
 	return &Provider{
 		clusterConfig:    clusterConfig,
 		datacenterConfig: datacenterConfig,
 		machineConfigs:   machineConfigs,
 		templateBuilder:  templateBuilder,
 		kubectlClient:    providerKubectlClient,
-		nutanixClient:    nutanixClient,
 		validator:        nutanixValidator,
 		writer:           writer,
 	}
@@ -186,14 +184,9 @@ func (p *Provider) SetupAndValidateCreateCluster(ctx context.Context, clusterSpe
 		return fmt.Errorf("failed setup and validations: %v", err)
 	}
 
-	if err := p.validator.ValidateDatacenterConfig(ctx, clusterSpec.NutanixDatacenter); err != nil {
-		return fmt.Errorf("failed to validate datacenter config: %v", err)
-	}
-
-	for _, conf := range clusterSpec.NutanixMachineConfigs {
-		if err := p.validator.ValidateMachineConfig(ctx, conf); err != nil {
-			return fmt.Errorf("failed to validate machine config: %v", err)
-		}
+	creds := GetCredsFromEnv()
+	if err := p.validator.ValidateClusterSpec(ctx, clusterSpec, creds); err != nil {
+		return fmt.Errorf("failed to validate cluster spec: %v", err)
 	}
 
 	if err := p.generateSSHKeysIfNotSet(); err != nil {

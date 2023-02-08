@@ -170,6 +170,10 @@ func (in *NutanixMachineConfig) Marshallable() Marshallable {
 	return in.ConvertConfigToConfigGenerateStruct()
 }
 
+func (in *NutanixMachineConfig) Validate() error {
+	return validateNutanixMachineConfig(in)
+}
+
 // NutanixMachineConfigGenerate is same as NutanixMachineConfig except stripped down for generation of yaml file during
 // generate clusterconfig
 //

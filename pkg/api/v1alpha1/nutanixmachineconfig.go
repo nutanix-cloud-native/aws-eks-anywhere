@@ -27,6 +27,7 @@ const (
 	NutanixIdentifierName NutanixIdentifierType = "name"
 
 	defaultNutanixOSFamily         = Ubuntu
+	defaultNutanixBootType         = "legacy"
 	defaultNutanixSystemDiskSizeGi = "40Gi"
 	defaultNutanixMemorySizeGi     = "4Gi"
 	defaultNutanixVCPUsPerSocket   = 1
@@ -160,4 +161,45 @@ func setNutanixMachineConfigDefaults(machineConfig *NutanixMachineConfig) {
 	if machineConfig.Spec.OSFamily == "" {
 		machineConfig.Spec.OSFamily = defaultNutanixOSFamily
 	}
+}
+
+func validateNutanixMachineConfig(c *NutanixMachineConfig) error {
+	if err := validateObjectMeta(c.ObjectMeta); err != nil {
+		return fmt.Errorf("NutanixMachineConfig: %v", err)
+	}
+
+	if c.Spec.Subnet.Type != NutanixIdentifierName && c.Spec.Subnet.Type != NutanixIdentifierUUID {
+		return fmt.Errorf("NutanixMachineConfig: subnet type must be either name or uuid")
+	}
+
+	if c.Spec.Cluster.Type != NutanixIdentifierName && c.Spec.Cluster.Type != NutanixIdentifierUUID {
+		return fmt.Errorf("NutanixMachineConfig: cluster type must be either name or uuid")
+	}
+
+	if c.Spec.Image.Type != NutanixIdentifierName && c.Spec.Image.Type != NutanixIdentifierUUID {
+		return fmt.Errorf("NutanixMachineConfig: image type must be either name or uuid")
+	}
+
+	if c.Spec.VCPUSockets <= 0 {
+		return fmt.Errorf("NutanixMachineConfig: vcpu sockets must be greater than 0")
+	}
+
+	if c.Spec.VCPUsPerSocket <= 0 {
+		return fmt.Errorf("NutanixMachineConfig: vcpu per socket must be greater than 0")
+	}
+
+	if c.Spec.OSFamily != Ubuntu && c.Spec.OSFamily != Bottlerocket {
+		return fmt.Errorf(
+			"NutanixMachineConfig: unsupported spec.osFamily (%v); Please use one of the following: %s, %s",
+			c.Spec.OSFamily,
+			Ubuntu,
+			Bottlerocket,
+		)
+	}
+
+	if len(c.Spec.Users) <= 0 {
+		return fmt.Errorf("TinkerbellMachineConfig: missing spec.Users: %s", c.Name)
+	}
+
+	return nil
 }

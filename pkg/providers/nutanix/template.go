@@ -164,6 +164,7 @@ func buildTemplateMapCP(
 		"nutanixPEClusterIDType":       controlPlaneMachineSpec.Cluster.Type,
 		"nutanixPEClusterName":         controlPlaneMachineSpec.Cluster.Name,
 		"nutanixPEClusterUUID":         controlPlaneMachineSpec.Cluster.UUID,
+		"secretName":                   clusterSpec.Cluster.Name,
 		"subnetIDType":                 controlPlaneMachineSpec.Subnet.Type,
 		"subnetName":                   controlPlaneMachineSpec.Subnet.Name,
 		"subnetUUID":                   controlPlaneMachineSpec.Subnet.UUID,
@@ -206,12 +207,13 @@ func buildTemplateMapMD(clusterSpec *cluster.Spec, workerNodeGroupMachineSpec v1
 		"subnetUUID":             workerNodeGroupMachineSpec.Subnet.UUID,
 		"workerNodeGroupName":    fmt.Sprintf("%s-%s", clusterSpec.Cluster.Name, workerNodeGroupConfiguration.Name),
 	}
+
 	return values
 }
 
 func buildTemplateMapSecret(clusterSpec *cluster.Spec, creds []byte) map[string]interface{} {
 	values := map[string]interface{}{
-		"clusterName":              clusterSpec.Cluster.Name,
+		"secretName":               clusterSpec.Cluster.Name,
 		"eksaSystemNamespace":      constants.EksaSystemNamespace,
 		"base64EncodedCredentials": base64.StdEncoding.EncodeToString(creds),
 	}

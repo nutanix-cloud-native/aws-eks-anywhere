@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"github.com/aws/eks-anywhere/pkg/logger"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
@@ -22,6 +23,7 @@ func GetCAPICluster(ctx context.Context, client client.Client, cluster *anywhere
 	key := types.NamespacedName{Namespace: constants.EksaSystemNamespace, Name: capiClusterName}
 
 	err := client.Get(ctx, key, capiCluster)
+	logger.Info("Getting CAPI cluster", "name", capiClusterName, "namespace", constants.EksaSystemNamespace, "err", err)
 	if apierrors.IsNotFound(err) {
 		return nil, nil
 	}

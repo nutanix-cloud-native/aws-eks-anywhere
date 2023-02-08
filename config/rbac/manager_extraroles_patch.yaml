@@ -81,6 +81,10 @@
       - cloudstackclusters/status
       - cloudstackmachinetemplates
       - cloudstackmachinetemplates/status
+      - nutanixclusters
+      - nutanixclusters/status
+      - nutanixmachinetemplates
+      - nutanixmachinetemplates/status
       - vsphereclusters
       - vsphereclusters/status
       - vspheremachinetemplates

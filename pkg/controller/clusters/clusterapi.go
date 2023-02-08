@@ -18,13 +18,14 @@ import (
 // due its signature and that it returns controller results with appropriate wait times whenever
 // the cluster is not ready.
 func CheckControlPlaneReady(ctx context.Context, client client.Client, log logr.Logger, cluster *anywherev1.Cluster) (controller.Result, error) {
+	log.Info("Checking CAPI control plane readiness", cluster)
 	capiCluster, err := controller.GetCAPICluster(ctx, client, cluster)
 	if err != nil {
 		return controller.Result{}, err
 	}
 
 	if capiCluster == nil {
-		log.Info("CAPI cluster does not exist yet, requeuing")
+		log.Info("CAPI cluster does not exist yet, requeuing", cluster)
 		return controller.ResultWithRequeue(5 * time.Second), nil
 	}
 

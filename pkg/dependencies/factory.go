@@ -3,15 +3,12 @@ package dependencies
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/google/uuid"
-	prismgoclient "github.com/nutanix-cloud-native/prism-go-client"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
 	"golang.org/x/exp/maps"
 
@@ -97,7 +94,10 @@ type Dependencies struct {
 	PackageClient               curatedpackages.PackageHandler
 	VSphereValidator            *vsphere.Validator
 	VSphereDefaulter            *vsphere.Defaulter
+	NutanixClientBuilder        *nutanix.ClientBuilder
+	NutanixDefaulter            *nutanix.Defaulter
 	NutanixPrismClient          *v3.Client
+	NutanixValidator            *nutanix.Validator
 	SnowValidator               *snow.Validator
 	IPValidator                 *validator.IPValidator
 }
@@ -345,7 +345,7 @@ func (f *Factory) WithProvider(clusterConfigFile string, clusterConfig *v1alpha1
 	case v1alpha1.SnowDatacenterKind:
 		f.WithUnAuthKubeClient().WithSnowConfigManager()
 	case v1alpha1.NutanixDatacenterKind:
-		f.WithKubectl().WithPrismClient(clusterConfigFile)
+		f.WithKubectl().WithNutanixClientBuilder().WithNutanixDefaulter().WithNutanixValidator()
 	}
 
 	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
@@ -472,7 +472,7 @@ func (f *Factory) WithProvider(clusterConfigFile string, clusterConfig *v1alpha1
 				clusterConfig,
 				f.dependencies.Kubectl,
 				f.dependencies.Writer,
-				f.dependencies.NutanixPrismClient.V3,
+				f.dependencies.NutanixClientBuilder,
 				crypto.NewTlsValidator(),
 				httpClient,
 				time.Now,
@@ -1219,47 +1219,49 @@ func (f *Factory) WithVSphereDefaulter() *Factory {
 	return f
 }
 
-func (f *Factory) WithPrismClient(clusterConfigFile string) *Factory {
-	if f.dependencies.NutanixPrismClient != nil {
-		return f
-	}
+func (f *Factory) WithNutanixClientBuilder() *Factory {
 	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
-		datacenterConfig, err := v1alpha1.GetNutanixDatacenterConfig(clusterConfigFile)
-		if err != nil {
-			return fmt.Errorf("unable to get datacenter config from file %s: %v", clusterConfigFile, err)
+		if f.dependencies.NutanixClientBuilder != nil {
+			return nil
 		}
 
-		clientOpts := make([]v3.ClientOption, 0)
-		if datacenterConfig.Spec.AdditionalTrustBundle != "" {
-			block, _ := pem.Decode([]byte(datacenterConfig.Spec.AdditionalTrustBundle))
-			certs, err := x509.ParseCertificates(block.Bytes)
-			if err != nil {
-				return fmt.Errorf("unable to parse additional trust bundle %s: %v", datacenterConfig.Spec.AdditionalTrustBundle, err)
-			}
-			if len(certs) == 0 {
-				return fmt.Errorf("unable to extract certs from the addtional trust bundle %s", datacenterConfig.Spec.AdditionalTrustBundle)
-			}
-			clientOpts = append(clientOpts, v3.WithCertificate(certs[0]))
+		f.dependencies.NutanixClientBuilder = nutanix.NewClientBuilder()
+
+		return nil
+	})
+
+	return f
+}
+
+func (f *Factory) WithNutanixDefaulter() *Factory {
+	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
+		if f.dependencies.NutanixDefaulter != nil {
+			return nil
 		}
 
-		endpoint := datacenterConfig.Spec.Endpoint
-		port := datacenterConfig.Spec.Port
-		url := fmt.Sprintf("%s:%d", endpoint, port)
-		creds := nutanix.GetCredsFromEnv()
-		nutanixCreds := prismgoclient.Credentials{
-			URL:      url,
-			Username: creds.PrismCentral.Username,
-			Password: creds.PrismCentral.Password,
-			Endpoint: endpoint,
-			Port:     fmt.Sprintf("%d", port),
-			Insecure: datacenterConfig.Spec.Insecure,
-		}
+		f.dependencies.NutanixDefaulter = nutanix.NewDefaulter()
 
-		client, err := v3.NewV3Client(nutanixCreds, clientOpts...)
-		if err != nil {
-			return fmt.Errorf("error creating nutanix client: %v", err)
+		return nil
+	})
+
+	return f
+}
+
+func (f *Factory) WithNutanixValidator() *Factory {
+	f.WithNutanixClientBuilder()
+	f.buildSteps = append(f.buildSteps, func(ctx context.Context) error {
+		if f.dependencies.NutanixValidator != nil {
+			return nil
 		}
-		f.dependencies.NutanixPrismClient = client
+		skipVerifyTransport := http.DefaultTransport.(*http.Transport).Clone()
+		skipVerifyTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		v := nutanix.NewValidator(
+			f.dependencies.NutanixClientBuilder,
+			crypto.NewTlsValidator(),
+			&http.Client{Transport: skipVerifyTransport},
+		)
+		f.dependencies.NutanixValidator = v
+
 		return nil
 	})
 
