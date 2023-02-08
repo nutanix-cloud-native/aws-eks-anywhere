@@ -12,6 +12,10 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	_defaultPrismCentralPort = 9440
+)
+
 // NutanixDatacenterConfigSpec defines the desired state of NutanixDatacenterConfig.
 type NutanixDatacenterConfigSpec struct {
 	// Endpoint is the Endpoint of Nutanix Prism Central
@@ -20,7 +24,7 @@ type NutanixDatacenterConfigSpec struct {
 
 	// Port is the Port of Nutanix Prism Central
 	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:Minimum=9440
+	// +kubebuilder:validation:Default=9440
 	Port int `json:"port"`
 
 	// AdditionalTrustBundle is the optional PEM-encoded certificate bundle for
@@ -101,6 +105,12 @@ func (in *NutanixDatacenterConfig) ConvertConfigToConfigGenerateStruct() *Nutani
 
 func (in *NutanixDatacenterConfig) Marshallable() Marshallable {
 	return in.ConvertConfigToConfigGenerateStruct()
+}
+
+func (in *NutanixDatacenterConfig) SetDefaults() {
+	if in.Spec.Port == 0 {
+		in.Spec.Port = _defaultPrismCentralPort
+	}
 }
 
 func (in *NutanixDatacenterConfig) Validate() error {
