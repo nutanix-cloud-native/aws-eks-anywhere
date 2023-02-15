@@ -8,6 +8,7 @@ import (
 	"github.com/nutanix-cloud-native/prism-go-client/environment/credentials"
 
 	"github.com/aws/eks-anywhere/pkg/api/v1alpha1"
+	anywherev1 "github.com/aws/eks-anywhere/pkg/api/v1alpha1"
 	"github.com/aws/eks-anywhere/pkg/cluster"
 	"github.com/aws/eks-anywhere/pkg/clusterapi"
 	"github.com/aws/eks-anywhere/pkg/constants"
@@ -169,6 +170,14 @@ func buildTemplateMapCP(
 		"subnetUUID":                   controlPlaneMachineSpec.Subnet.UUID,
 	}
 
+	if controlPlaneMachineSpec.OSFamily == anywherev1.Bottlerocket {
+		values["format"] = string(anywherev1.Bottlerocket)
+		values["pauseRepository"] = bundle.KubeDistro.Pause.Image()
+		values["pauseVersion"] = bundle.KubeDistro.Pause.Tag()
+		values["bottlerocketBootstrapRepository"] = bundle.BottleRocketHostContainers.KubeadmBootstrap.Image()
+		values["bottlerocketBootstrapVersion"] = bundle.BottleRocketHostContainers.KubeadmBootstrap.Tag()
+	}
+
 	if clusterSpec.Cluster.Spec.ExternalEtcdConfiguration != nil {
 		values["externalEtcd"] = true
 		values["externalEtcdReplicas"] = clusterSpec.Cluster.Spec.ExternalEtcdConfiguration.Count
@@ -206,6 +215,15 @@ func buildTemplateMapMD(clusterSpec *cluster.Spec, workerNodeGroupMachineSpec v1
 		"subnetUUID":             workerNodeGroupMachineSpec.Subnet.UUID,
 		"workerNodeGroupName":    fmt.Sprintf("%s-%s", clusterSpec.Cluster.Name, workerNodeGroupConfiguration.Name),
 	}
+
+	if workerNodeGroupMachineSpec.OSFamily == anywherev1.Bottlerocket {
+		values["format"] = string(anywherev1.Bottlerocket)
+		values["pauseRepository"] = bundle.KubeDistro.Pause.Image()
+		values["pauseVersion"] = bundle.KubeDistro.Pause.Tag()
+		values["bottlerocketBootstrapRepository"] = bundle.BottleRocketHostContainers.KubeadmBootstrap.Image()
+		values["bottlerocketBootstrapVersion"] = bundle.BottleRocketHostContainers.KubeadmBootstrap.Tag()
+	}
+
 	return values
 }
 

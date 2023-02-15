@@ -80,7 +80,16 @@ spec:
     spec:
       preKubeadmCommands:
         - hostnamectl set-hostname "{{`{{ ds.meta_data.hostname }}`}}"
+      format: {{.format}}
       joinConfiguration:
+{{- if (eq .format "bottlerocket") }}
+        pause:
+          imageRepository: {{.pauseRepository}}
+          imageTag: {{.pauseVersion}}
+        bottlerocketBootstrap:
+          imageRepository: {{.bottlerocketBootstrapRepository}}
+          imageTag: {{.bottlerocketBootstrapVersion}}
+{{- end }}
         nodeRegistration:
           kubeletExtraArgs:
             # We have to pin the cgroupDriver to cgroupfs as kubeadm >=1.21 defaults to systemd

@@ -75,13 +75,27 @@ spec:
       dns:
         imageRepository: {{.corednsRepository}}
         imageTag: {{.corednsVersion}}
+{{- if (eq .format "bottlerocket") }}
+      pause:
+        imageRepository: {{.pauseRepository}}
+        imageTag: {{.pauseVersion}}
+      bottlerocketBootstrap:
+        imageRepository: {{.bottlerocketBootstrapRepository}}
+        imageTag: {{.bottlerocketBootstrapVersion}}
+{{- end }}
       etcd:
 {{- if .externalEtcd }}
         external:
           endpoints: []
+{{- if (eq .format "bottlerocket") }}
+          caFile: "/var/lib/kubeadm/pki/etcd/ca.crt"
+          certFile: "/var/lib/kubeadm/pki/server-etcd-client.crt"
+          keyFile: "/var/lib/kubeadm/pki/apiserver-etcd-client.key"
+{{- else }}
           caFile: "/etc/kubernetes/pki/etcd/ca.crt"
           certFile: "/etc/kubernetes/pki/apiserver-etcd-client.crt"
           keyFile: "/etc/kubernetes/pki/apiserver-etcd-client.key"
+{{- end }}
 {{- else }}
         local:
           imageRepository: {{.etcdRepository}}
@@ -155,6 +169,16 @@ spec:
           # kind will implement systemd support in: https://github.com/kubernetes-sigs/kind/issues/1726
           #cgroup-driver: cgroupfs
           eviction-hard: nodefs.available<0%,nodefs.inodesFree<0%,imagefs.available<0%
+    joinConfiguration:
+{{- if (eq .format "bottlerocket") }}
+      pause:
+        imageRepository: {{.pauseRepository}}
+        imageTag: {{.pauseVersion}}
+      bottlerocketBootstrap:
+        imageRepository: {{.bottlerocketBootstrapRepository}}
+        imageTag: {{.bottlerocketBootstrapVersion}}
+{{- end }}
+    format: {{.format}}
     users:
       - name: "{{.controlPlaneSshUsername }}"
         lockPassword: false
