@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"sigs.k8s.io/yaml"
 
 	"github.com/aws/eks-anywhere/pkg/api/v1alpha1"
 	"github.com/aws/eks-anywhere/pkg/bootstrapper"
@@ -236,6 +237,33 @@ func (p *Provider) UpdateSecrets(ctx context.Context, cluster *types.Cluster, cl
 	if err := p.kubectlClient.ApplyKubeSpecFromBytes(ctx, cluster, contents); err != nil {
 		return fmt.Errorf("loading secrets object: %v", err)
 	}
+
+	if err := p.updateDatacenterCredentialRef(ctx, clusterSpec); err != nil {
+		return fmt.Errorf("loading datacenter credential ref object: %v", err)
+	}
+
+	return nil
+}
+
+func (p *Provider) updateDatacenterCredentialRef(ctx context.Context, clusterSpec *cluster.Spec) error {
+	if clusterSpec.NutanixDatacenter.Spec.CredentialRef != nil {
+		return nil
+	}
+
+	clusterSpec.NutanixDatacenter.Spec.CredentialRef = &v1alpha1.NutanixCredentialReference{
+		Name:      clusterSpec.Cluster.Name,
+		Namespace: constants.EksaSystemNamespace,
+	}
+
+	contents, err := yaml.Marshal(clusterSpec.NutanixDatacenter)
+	if err != nil {
+		return fmt.Errorf("marshaling datacenter config: %v", err)
+	}
+
+	if err := p.kubectlClient.ApplyKubeSpecFromBytes(ctx, clusterSpec.ManagementCluster, contents); err != nil {
+		return fmt.Errorf("loading datacenter credential ref object: %v", err)
+	}
+
 	return nil
 }
 

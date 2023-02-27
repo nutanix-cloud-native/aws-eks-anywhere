@@ -10,6 +10,7 @@ spec:
     insecure: false
     credentialRef:
       name: "eksa-unit-test"
+      namespace: "eksa-system"
       kind: Secret
   controlPlaneEndpoint:
     host: "test-ip"

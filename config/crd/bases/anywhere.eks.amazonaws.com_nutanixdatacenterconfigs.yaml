@@ -43,6 +43,26 @@ spec:
                   bundle for users that configured their Prism Central with certificates
                   from non-publicly trusted CAs
                 type: string
+              credentialRef:
+                description: CredentialRef is the reference to the secret that contains
+                  the credentials for the Nutanix Prism Central
+                properties:
+                  kind:
+                    description: Kind of the Nutanix credential
+                    enum:
+                    - Secret
+                    type: string
+                  name:
+                    description: Name of the credential.
+                    minLength: 1
+                    type: string
+                  namespace:
+                    description: namespace of the credential.
+                    type: string
+                required:
+                - kind
+                - name
+                type: object
               endpoint:
                 description: Endpoint is the Endpoint of Nutanix Prism Central
                 type: string

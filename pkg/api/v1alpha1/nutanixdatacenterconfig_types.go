@@ -36,6 +36,34 @@ type NutanixDatacenterConfigSpec struct {
 	// Certificate that ships with Prism Central, we allow the user to skip TLS
 	// verification. This is not recommended for production use.
 	Insecure bool `json:"insecure,omitempty"`
+
+	// CredentialRef is the reference to the secret that contains the credentials
+	// for the Nutanix Prism Central
+	// +optional
+	CredentialRef *NutanixCredentialReference `json:"credentialRef,omitempty"`
+}
+
+// NutanixCredentialKind is the kind of the Nutanix credential
+type NutanixCredentialKind string
+
+const (
+	// NutanixCredentialKindSecret is enum value for NutanixCredentialKind
+	NutanixCredentialKindSecret = NutanixCredentialKind("Secret")
+)
+
+// NutanixCredentialReference is the reference to the secret that contains the credentials
+// +kubebuilder:object:generate=true
+type NutanixCredentialReference struct {
+	// Kind of the Nutanix credential
+	// +kubebuilder:validation:Enum=Secret
+	Kind NutanixCredentialKind `json:"kind"`
+	// Name of the credential.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Name string `json:"name"`
+	// namespace of the credential.
+	// +optional
+	Namespace string `json:"namespace"`
 }
 
 // NutanixDatacenterConfigStatus defines the observed state of NutanixDatacenterConfig.

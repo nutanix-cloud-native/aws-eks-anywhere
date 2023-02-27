@@ -169,6 +169,18 @@ func buildTemplateMapCP(
 		"subnetUUID":                   controlPlaneMachineSpec.Subnet.UUID,
 	}
 
+	if clusterSpec.NutanixDatacenter.Spec.CredentialRef != nil {
+		values["secretName"] = clusterSpec.NutanixDatacenter.Spec.CredentialRef.Name
+		if clusterSpec.NutanixDatacenter.Spec.CredentialRef.Namespace != "" {
+			values["secretNamespace"] = clusterSpec.NutanixDatacenter.Spec.CredentialRef.Namespace
+		} else {
+			values["secretNamespace"] = constants.EksaSystemNamespace
+		}
+	} else {
+		values["secretName"] = clusterSpec.Cluster.Name
+		values["secretNamespace"] = constants.EksaSystemNamespace
+	}
+
 	if clusterSpec.Cluster.Spec.ExternalEtcdConfiguration != nil {
 		values["externalEtcd"] = true
 		values["externalEtcdReplicas"] = clusterSpec.Cluster.Spec.ExternalEtcdConfiguration.Count

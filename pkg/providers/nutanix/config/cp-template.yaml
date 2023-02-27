@@ -15,7 +15,8 @@ spec:
     port: {{.nutanixPort}}
     insecure: {{.nutanixInsecure}}
     credentialRef:
-      name: "{{.clusterName}}"
+      name: "{{.secretName}}"
+      namespace: "{{.secretNamespace}}"
       kind: Secret
   controlPlaneEndpoint:
     host: "{{.controlPlaneEndpointIp}}"
