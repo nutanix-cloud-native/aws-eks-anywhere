@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nutanix-cloud-native/prism-go-client/utils"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
 	"k8s.io/apimachinery/pkg/api/resource"
 
@@ -233,9 +232,7 @@ func (v *Validator) validateSubnetConfig(ctx context.Context, identifier anywher
 
 // findSubnetUUIDByName retrieves the subnet uuid by the given subnet name.
 func findSubnetUUIDByName(ctx context.Context, v3Client Client, subnetName string) (*string, error) {
-	res, err := v3Client.ListSubnet(ctx, &v3.DSMetadata{
-		Filter: utils.StringPtr(fmt.Sprintf("name==%s", subnetName)),
-	})
+	res, err := v3Client.ListSubnet(ctx, &v3.DSMetadata{})
 	if err != nil || len(res.Entities) == 0 {
 		return nil, fmt.Errorf("failed to find subnet by name %q: %v", subnetName, err)
 	}
@@ -249,9 +246,7 @@ func findSubnetUUIDByName(ctx context.Context, v3Client Client, subnetName strin
 
 // findClusterUUIDByName retrieves the cluster uuid by the given cluster name.
 func findClusterUUIDByName(ctx context.Context, v3Client Client, clusterName string) (*string, error) {
-	res, err := v3Client.ListCluster(ctx, &v3.DSMetadata{
-		Filter: utils.StringPtr(fmt.Sprintf("name==%s", clusterName)),
-	})
+	res, err := v3Client.ListCluster(ctx, &v3.DSMetadata{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find cluster by name %q: %v", clusterName, err)
 	}
@@ -284,9 +279,7 @@ func findClusterUUIDByName(ctx context.Context, v3Client Client, clusterName str
 
 // findImageUUIDByName retrieves the image uuid by the given image name.
 func findImageUUIDByName(ctx context.Context, v3Client Client, imageName string) (*string, error) {
-	res, err := v3Client.ListImage(ctx, &v3.DSMetadata{
-		Filter: utils.StringPtr(fmt.Sprintf("name==%s", imageName)),
-	})
+	res, err := v3Client.ListImage(ctx, &v3.DSMetadata{})
 	if err != nil || len(res.Entities) == 0 {
 		return nil, fmt.Errorf("failed to find image by name %q: %v", imageName, err)
 	}
