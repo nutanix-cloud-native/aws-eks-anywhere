@@ -4400,6 +4400,16 @@ spec:
                   bundle for users that configured their Prism Central with certificates
                   from non-publicly trusted CAs
                 type: string
+              credentialRef:
+                description: CredentialRef is the reference to the secret name that
+                  contains the credentials for the Nutanix Prism Central. The namespace
+                  for the secret is assumed to be a constant i.e. eksa-system.
+                properties:
+                  kind:
+                    type: string
+                  name:
+                    type: string
+                type: object
               endpoint:
                 description: Endpoint is the Endpoint of Nutanix Prism Central
                 type: string
@@ -5995,6 +6005,10 @@ rules:
   - cloudstackclusters/status
   - cloudstackmachinetemplates
   - cloudstackmachinetemplates/status
+  - nutanixclusters
+  - nutanixclusters/status
+  - nutanixmachinetemplates
+  - nutanixmachinetemplates/status
   - vsphereclusters
   - vsphereclusters/status
   - vspheremachinetemplates
@@ -6292,6 +6306,27 @@ webhooks:
     service:
       name: eksa-webhook-service
       namespace: eksa-system
+      path: /mutate-anywhere-eks-amazonaws-com-v1alpha1-cloudstackdatacenterconfig
+  failurePolicy: Fail
+  name: mutation.cloudstackdatacenterconfig.anywhere.amazonaws.com
+  rules:
+  - apiGroups:
+    - anywhere.eks.amazonaws.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - cloudstackdatacenterconfigs
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: eksa-webhook-service
+      namespace: eksa-system
       path: /mutate-anywhere-eks-amazonaws-com-v1alpha1-cluster
   failurePolicy: Fail
   name: mutation.cluster.anywhere.amazonaws.com
@@ -6305,6 +6340,27 @@ webhooks:
     - UPDATE
     resources:
     - clusters
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: eksa-webhook-service
+      namespace: eksa-system
+      path: /mutate-anywhere-eks-amazonaws-com-v1alpha1-nutanixdatacenterconfig
+  failurePolicy: Fail
+  name: mutation.nutanixdatacenterconfig.anywhere.amazonaws.com
+  rules:
+  - apiGroups:
+    - anywhere.eks.amazonaws.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - nutanixdatacenterconfigs
   sideEffects: None
 - admissionReviewVersions:
   - v1
@@ -6389,27 +6445,6 @@ webhooks:
     - UPDATE
     resources:
     - vspheremachineconfigs
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: eksa-webhook-service
-      namespace: eksa-system
-      path: /mutate-anywhere-eks-amazonaws-com-v1alpha1-cloudstackdatacenterconfig
-  failurePolicy: Fail
-  name: mutation.cloudstackdatacenterconfig.anywhere.amazonaws.com
-  rules:
-  - apiGroups:
-    - anywhere.eks.amazonaws.com
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - cloudstackdatacenterconfigs
   sideEffects: None
 ---
 apiVersion: admissionregistration.k8s.io/v1
@@ -6544,6 +6579,27 @@ webhooks:
     - UPDATE
     resources:
     - gitopsconfigs
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: eksa-webhook-service
+      namespace: eksa-system
+      path: /validate-anywhere-eks-amazonaws-com-v1alpha1-nutanixdatacenterconfig
+  failurePolicy: Fail
+  name: nutanixdatacenterconfig.kb.io
+  rules:
+  - apiGroups:
+    - anywhere.eks.amazonaws.com
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - nutanixdatacenterconfigs
   sideEffects: None
 - admissionReviewVersions:
   - v1
