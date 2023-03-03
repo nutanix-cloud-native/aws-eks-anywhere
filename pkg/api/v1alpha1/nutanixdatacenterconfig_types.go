@@ -129,6 +129,15 @@ func (in *NutanixDatacenterConfig) Validate() error {
 		}
 	}
 
+	if in.Spec.CredentialRef != nil {
+		if in.Spec.CredentialRef.Kind != "Secret" {
+			return fmt.Errorf("NutanixDatacenterConfig credentialRef Kind (%T) is not a secret", in.Spec.CredentialRef.Kind)
+		}
+		if len(in.Spec.CredentialRef.Name) <= 0 {
+			return errors.New("NutanixDatacenterConfig credentialRef name is not set or is empty")
+		}
+	}
+
 	return nil
 }
 
