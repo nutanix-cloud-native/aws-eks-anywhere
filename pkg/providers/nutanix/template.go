@@ -186,6 +186,12 @@ func buildTemplateMapCP(
 		values["etcdSshUsername"] = etcdMachineSpec.Users[0].Name
 	}
 
+	if controlPlaneMachineSpec.Project != nil {
+		values["projectIDType"] = controlPlaneMachineSpec.Project.Type
+		values["projectName"] = controlPlaneMachineSpec.Project.Name
+		values["projectUUID"] = controlPlaneMachineSpec.Project.UUID
+	}
+
 	return values
 }
 
@@ -217,6 +223,13 @@ func buildTemplateMapMD(clusterSpec *cluster.Spec, workerNodeGroupMachineSpec v1
 		"subnetUUID":             workerNodeGroupMachineSpec.Subnet.UUID,
 		"workerNodeGroupName":    fmt.Sprintf("%s-%s", clusterSpec.Cluster.Name, workerNodeGroupConfiguration.Name),
 	}
+
+	if workerNodeGroupMachineSpec.Project != nil {
+		values["projectIDType"] = workerNodeGroupMachineSpec.Project.Type
+		values["projectName"] = workerNodeGroupMachineSpec.Project.Name
+		values["projectUUID"] = workerNodeGroupMachineSpec.Project.UUID
+	}
+
 	return values
 }
 
